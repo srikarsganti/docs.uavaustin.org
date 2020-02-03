@@ -1,0 +1,362 @@
+<!DOCTYPE HTML>
+<html lang="en" class="sidebar-visible no-js light">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>Detector Data - Image Recognition Primer</title>
+        
+
+        <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff" />
+
+        <link rel="shortcut icon" href="../favicon.png">
+        <link rel="stylesheet" href="../css/variables.css">
+        <link rel="stylesheet" href="../css/general.css">
+        <link rel="stylesheet" href="../css/chrome.css">
+        <link rel="stylesheet" href="../css/print.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="../FontAwesome/css/font-awesome.css">
+        <link href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet" type="text/css">
+        <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro:500" rel="stylesheet" type="text/css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" href="../highlight.css">
+        <link rel="stylesheet" href="../tomorrow-night.css">
+        <link rel="stylesheet" href="../ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+        
+
+        
+        <!-- MathJax -->
+        <script async type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+        
+    </head>
+    <body>
+        <!-- Provide site root to javascript -->
+        <script type="text/javascript">
+            var path_to_root = "../";
+            var default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "light" : "light";
+        </script>
+
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script type="text/javascript">
+            try {
+                var theme = localStorage.getItem('mdbook-theme');
+                var sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script type="text/javascript">
+            var theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            var html = document.querySelector('html');
+            html.classList.remove('no-js')
+            html.classList.remove('light')
+            html.classList.add(theme);
+            html.classList.add('js');
+        </script>
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script type="text/javascript">
+            var html = document.querySelector('html');
+            var sidebar = 'hidden';
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            }
+            html.classList.remove('sidebar-visible');
+            html.classList.add("sidebar-" + sidebar);
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <div id="sidebar-scrollbox" class="sidebar-scrollbox">
+                <ol class="chapter"><li class="expanded "><a href="../index.html"><strong aria-hidden="true">1.</strong> Introduction</a></li><li class="expanded "><a href="../training-data/index.html"><strong aria-hidden="true">2.</strong> Training Data Generation</a></li><li><ol class="section"><li class="expanded "><a href="../training-data/basic-image-manipulation.html"><strong aria-hidden="true">2.1.</strong> Full Image Generation</a></li><li class="expanded "><a href="../training-data/classifier-generation.html"><strong aria-hidden="true">2.2.</strong> Classifier Data</a></li><li class="expanded "><a href="../training-data/detector-generation.html" class="active"><strong aria-hidden="true">2.3.</strong> Detector Data</a></li></ol></li><li class="expanded "><a href="../convolution-neural-networks/index.html"><strong aria-hidden="true">3.</strong> Neural Networks</a></li><li><ol class="section"><li class="expanded "><a href="../convolution-neural-networks/inter-to-neural-nets.html"><strong aria-hidden="true">3.1.</strong> Intro to Neural Nets</a></li><li class="expanded "><a href="../convolution-neural-networks/convolutional-neural-networks.html"><strong aria-hidden="true">3.2.</strong> Convolutional Neural Networks</a></li></ol></li><li class="expanded "><a href="../yolo-architecture/index.html"><strong aria-hidden="true">4.</strong> YOLO Object Detector</a></li><li><ol class="section"><li class="expanded "><a href="../yolo-architecture/yolo-architecture.html"><strong aria-hidden="true">4.1.</strong> YOLO Architecture</a></li></ol></li></ol>
+            </div>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle"></div>
+        </nav>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                
+                <div id="menu-bar" class="menu-bar">
+                    <div id="menu-bar-sticky-container">
+                        <div class="left-buttons">
+                            <button id="sidebar-toggle" class="icon-button" type="button" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                                <i class="fa fa-bars"></i>
+                            </button>
+                            <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                                <i class="fa fa-paint-brush"></i>
+                            </button>
+                            <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                                <li role="none"><button role="menuitem" class="theme" id="light">Light (default)</button></li>
+                                <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                                <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                                <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                                <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                            </ul>
+                            
+                            <button id="search-toggle" class="icon-button" type="button" title="Search. (Shortkey: s)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="S" aria-controls="searchbar">
+                                <i class="fa fa-search"></i>
+                            </button>
+                            
+                        </div>
+
+                        <h1 class="menu-title">Image Recognition Primer</h1>
+
+                        <div class="right-buttons">
+                            <a href="../print.html" title="Print this book" aria-label="Print this book">
+                                <i id="print-button" class="fa fa-print"></i>
+                            </a>
+                            
+                        </div>
+                    </div>
+                </div>
+
+                
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <input type="search" name="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+                
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script type="text/javascript">
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <h1><a class="header" href="#detector-data" id="detector-data">Detector Data</a></h1>
+<p>For the YOLO object detector, training data consists of training images and corresponding txt files detailing the objects' class and normalized center x and y, width, and height. We'll start by defining the basic constants.</p>
+<pre><code class="language-python"># Project imports
+import glob
+import os
+from PIL import Image
+
+# Define crop sizes
+CROP_WIDTH = 416
+CROP_HEIGHT = 416
+
+# Define detection image size
+DET_WIDTH = 608
+DET_HEIGHT = 608
+
+# Amount of overlap between image slices
+OVERLAP = 50
+
+# This ratio will help with maintaining aspect ratio
+RATIO = DET_WIDTH / CROP_WIDTH
+
+# Define our shape classes
+CLASSES = os.environ.get(
+    'SHAPE_TYPES',
+    'circle,cross,pentagon,quarter-circle,rectangle,semicircle,square,star,'
+    'trapezoid,triangle'
+).split(',')
+</code></pre>
+<p>Our original txt file has the target information in terms of the full image size. We need to make a function that can adjust those coordinates for the image crops. This function will also check if a target is contained in the image slice.</p>
+<pre><code class="language-python">def get_converted_bboxes(x1, y1, x2, y2, data):
+    &quot;&quot;&quot;Find bboxes in coords and convert them to yolo format&quot;&quot;&quot;
+    bboxes = []
+
+    for shape_desc, bx, by, bw, bh in data:
+
+        if x1 &lt; bx &lt; bx + bw &lt; x2 and y1 &lt; by &lt; by + bh &lt; y2:
+
+            # Yolo3 Format
+            # class_idx center_x/im_w center_y/im_h w/im_w h/im_h
+            shape_class_idx = CLASSES.index(shape_desc)
+            center_x = (bx - x1 + bw / 2) * RATIO / DET_WIDTH
+            center_y = (by - y1 + bh / 2) * RATIO / DET_HEIGHT
+            width = bw * RATIO / DET_WIDTH
+            height = bh * RATIO / DET_HEIGHT
+
+            bboxes.append((shape_class_idx,
+                          center_x, center_y,
+                          width, height))
+
+    return bboxes
+</code></pre>
+<p>Next, we need to crop the original image and create the training data. This function slices the image, checks for targets, and then saves the target txts. We do not save slices without targets because and object detector must have a class in the image.</p>
+<pre><code class="language-python">def create_detector_data(dataset_name, dataset_path, image_name, image, data):
+    &quot;&quot;&quot;Generate data for the detector model&quot;&quot;&quot;
+    full_width, full_height = image.size
+
+    k = 0
+
+    for y1 in range(0, full_height - CROP_HEIGHT, CROP_HEIGHT - OVERLAP):
+
+        for x1 in range(0, full_width - CROP_WIDTH, CROP_WIDTH - OVERLAP):
+
+            y2 = y1 + CROP_HEIGHT
+            x2 = x1 + CROP_WIDTH
+
+            cropped_bboxes = get_converted_bboxes(x1, y1, x2, y2, data)
+
+            if len(cropped_bboxes) == 0:
+                # discard crop b/c no shape
+                continue
+
+            k += 1
+
+            cropped_img = image.crop((x1, y1, x2, y2))
+            cropped_img = cropped_img.resize((DET_WIDTH, DET_HEIGHT))
+
+            name = '{}_crop{}'.format(image_name, k)
+            bbox_fn = os.path.join(dataset_path, name + '.txt')
+            image_fn = os.path.join(os.getcwd(), dataset_path, name + '.png')
+            list_fn = '{}_list.txt'.format(dataset_name)
+            list_path = os.path.join(dataset_path, list_fn)
+
+            cropped_img.save(image_fn)
+
+            with open(bbox_fn, 'w') as label_file:
+                for bbox in cropped_bboxes:
+                    label_file.write('{} {} {} {} {}\n'.format(*bbox))
+
+            with open(list_path, 'a') as list_file:
+                list_file.write(image_fn + &quot;\n&quot;)
+
+</code></pre>
+<p>Lastly, a function to create the cropped data folders, read in the image data, and call the function above.</p>
+<pre><code class="language-python">def convert_data(img_path):
+
+    # Get paths to new images and image dir
+    new_dataset = os.path.join(os.getcwd(),'imgs')
+    new_images_path = os.path.join(os.getcwd(), new_dataset, 'detector_imgs')
+
+    os.makedirs(new_images_path, exist_ok=True)
+
+    label_fn = img_path.replace('.jpg', '.txt')
+
+    image_data = []
+ 
+    with open(label_fn, 'r') as label_file:
+        for line in label_file.readlines():
+            shape_desc, x, y, w, h = line.strip().split(' ')
+            x, y, w, h = int(x), int(y), int(w), int(h)
+            image_data.append((shape_desc, x, y, w, h))
+
+    image_name = os.path.basename(img_path).replace('.jpg', '')
+
+    create_detector_data(new_dataset,
+                            new_images_path,
+                            image_name,
+                            Image.open(img_path),
+                            image_data)
+</code></pre>
+<p>We can run the script by placing the following line in the script:</p>
+<pre><code class="language-python">if __name__ == &quot;__main__&quot;:
+    convert_data('/path/to/img')
+</code></pre>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                        
+                            <a rel="prev" href="../training-data/classifier-generation.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+                        
+
+                        
+                            <a rel="next" href="../convolution-neural-networks/index.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+                        
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                
+                    <a href="../training-data/classifier-generation.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+                
+
+                
+                    <a href="../convolution-neural-networks/index.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+                
+            </nav>
+
+        </div>
+
+        
+
+        
+        <!-- Google Analytics Tag -->
+        <script type="text/javascript">
+            var localAddrs = ["localhost", "127.0.0.1", ""];
+
+            // make sure we don't activate google analytics if the developer is
+            // inspecting the book locally...
+            if (localAddrs.indexOf(document.location.hostname) === -1) {
+                (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+                (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+                m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+                })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+                ga('create', 'UA-105339892-2', 'auto');
+                ga('send', 'pageview');
+            }
+        </script>
+        
+
+        
+        
+        
+        <script type="text/javascript">
+            window.playpen_copyable = true;
+        </script>
+        
+
+        
+
+        
+        <script src="../elasticlunr.min.js" type="text/javascript" charset="utf-8"></script>
+        <script src="../mark.min.js" type="text/javascript" charset="utf-8"></script>
+        <script src="../searcher.js" type="text/javascript" charset="utf-8"></script>
+        
+
+        <script src="../clipboard.min.js" type="text/javascript" charset="utf-8"></script>
+        <script src="../highlight.js" type="text/javascript" charset="utf-8"></script>
+        <script src="../book.js" type="text/javascript" charset="utf-8"></script>
+
+        <!-- Custom JS scripts -->
+        
+
+        
+
+    </body>
+</html>

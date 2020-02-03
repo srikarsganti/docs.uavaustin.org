@@ -1,0 +1,843 @@
+<!DOCTYPE HTML>
+<html lang="en" class="sidebar-visible no-js light">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>Image Recognition Primer</title>
+        
+        <meta name="robots" content="noindex" />
+        
+
+        <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff" />
+
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
+        <link href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet" type="text/css">
+        <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro:500" rel="stylesheet" type="text/css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" href="highlight.css">
+        <link rel="stylesheet" href="tomorrow-night.css">
+        <link rel="stylesheet" href="ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+        
+
+        
+        <!-- MathJax -->
+        <script async type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+        
+    </head>
+    <body>
+        <!-- Provide site root to javascript -->
+        <script type="text/javascript">
+            var path_to_root = "";
+            var default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "light" : "light";
+        </script>
+
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script type="text/javascript">
+            try {
+                var theme = localStorage.getItem('mdbook-theme');
+                var sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script type="text/javascript">
+            var theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            var html = document.querySelector('html');
+            html.classList.remove('no-js')
+            html.classList.remove('light')
+            html.classList.add(theme);
+            html.classList.add('js');
+        </script>
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script type="text/javascript">
+            var html = document.querySelector('html');
+            var sidebar = 'hidden';
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            }
+            html.classList.remove('sidebar-visible');
+            html.classList.add("sidebar-" + sidebar);
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <div id="sidebar-scrollbox" class="sidebar-scrollbox">
+                <ol class="chapter"><li class="expanded "><a href="index.html"><strong aria-hidden="true">1.</strong> Introduction</a></li><li class="expanded "><a href="training-data/index.html"><strong aria-hidden="true">2.</strong> Training Data Generation</a></li><li><ol class="section"><li class="expanded "><a href="training-data/basic-image-manipulation.html"><strong aria-hidden="true">2.1.</strong> Full Image Generation</a></li><li class="expanded "><a href="training-data/classifier-generation.html"><strong aria-hidden="true">2.2.</strong> Classifier Data</a></li><li class="expanded "><a href="training-data/detector-generation.html"><strong aria-hidden="true">2.3.</strong> Detector Data</a></li></ol></li><li class="expanded "><a href="convolution-neural-networks/index.html"><strong aria-hidden="true">3.</strong> Neural Networks</a></li><li><ol class="section"><li class="expanded "><a href="convolution-neural-networks/inter-to-neural-nets.html"><strong aria-hidden="true">3.1.</strong> Intro to Neural Nets</a></li><li class="expanded "><a href="convolution-neural-networks/convolutional-neural-networks.html"><strong aria-hidden="true">3.2.</strong> Convolutional Neural Networks</a></li></ol></li><li class="expanded "><a href="yolo-architecture/index.html"><strong aria-hidden="true">4.</strong> YOLO Object Detector</a></li><li><ol class="section"><li class="expanded "><a href="yolo-architecture/yolo-architecture.html"><strong aria-hidden="true">4.1.</strong> YOLO Architecture</a></li></ol></li></ol>
+            </div>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle"></div>
+        </nav>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                
+                <div id="menu-bar" class="menu-bar">
+                    <div id="menu-bar-sticky-container">
+                        <div class="left-buttons">
+                            <button id="sidebar-toggle" class="icon-button" type="button" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                                <i class="fa fa-bars"></i>
+                            </button>
+                            <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                                <i class="fa fa-paint-brush"></i>
+                            </button>
+                            <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                                <li role="none"><button role="menuitem" class="theme" id="light">Light (default)</button></li>
+                                <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                                <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                                <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                                <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                            </ul>
+                            
+                            <button id="search-toggle" class="icon-button" type="button" title="Search. (Shortkey: s)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="S" aria-controls="searchbar">
+                                <i class="fa fa-search"></i>
+                            </button>
+                            
+                        </div>
+
+                        <h1 class="menu-title">Image Recognition Primer</h1>
+
+                        <div class="right-buttons">
+                            <a href="print.html" title="Print this book" aria-label="Print this book">
+                                <i id="print-button" class="fa fa-print"></i>
+                            </a>
+                            
+                        </div>
+                    </div>
+                </div>
+
+                
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <input type="search" name="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+                
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script type="text/javascript">
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <h1><a class="header" href="#introduction" id="introduction">Introduction</a></h1>
+<p>The UAVA Image Rec pipeline operates as follows:</p>
+<ul>
+<li>
+<p>Aerial imagery is captured from the drone</p>
+</li>
+<li>
+<p>The image is sliced into smaller tiles </p>
+</li>
+<li>
+<p>These tiles are sent to a classification network which determines wether an image tiles has a target or not</p>
+</li>
+<li>
+<p>Tiles classified with targets are sent to a YOLO object detection model which detects which shape and alphanumeric (A-Z, 0-9 is present)</p>
+</li>
+<li>
+<p>Detected targets are analyzed for most prominent colors to determine shape and alphanumeric color</p>
+</li>
+</ul>
+<p>The UAVA Image Recognition software stack consists of two main projects, target-finder-model and target-finder.</p>
+<h4><a class="header" href="#a-hrefhttpsgithubcomuavaustintarget-finder-modeluavaustintarget-finder-modela" id="a-hrefhttpsgithubcomuavaustintarget-finder-modeluavaustintarget-finder-modela"><a href="https://github.com/uavaustin/target-finder-model">uavaustin/target-finder-model</a></a></h4>
+<p>This portion consists of scripts used to generate data that is used to train our classifier and object detector</p>
+<h4><a class="header" href="#a-hrefhttpsgithubcomuavaustintarget-finderuavaustintarget-findera" id="a-hrefhttpsgithubcomuavaustintarget-finderuavaustintarget-findera"><a href="https://github.com/uavaustin/target-finder">uavaustin/target-finder</a></a></h4>
+<p>This base contains an API used to inference on immages rercieved from the drone-mounted camera.</p>
+<h1><a class="header" href="#pil-image-transformations" id="pil-image-transformations">PIL Image Transformations</a></h1>
+<p>In this section we will learn basic image transformations and how they are used for preprocessing and generating training data for our neural nets.</p>
+<h1><a class="header" href="#basic-image-manipulation" id="basic-image-manipulation">Basic Image Manipulation</a></h1>
+<h2><a class="header" href="#geometric-transformations" id="geometric-transformations">Geometric Transformations</a></h2>
+<p>PIL has predefined functions for the many image transformations we use to create our training dataset.
+Another image transformation package is OpenCV which can do everything PIL does and more; however, we will stick with PIL because it is a smaller package.</p>
+<p>In the following example we will walk through how we create our training data for our vision models. We will augment our artifical targets to and then paste them onto background images to make the data.</p>
+<pre><code class="language-python">from PIL import Image
+img = Image.open(&quot;//path//to//comp_photo.jpg&quot;)
+# Sanity Check
+img.show('Example Image')
+</code></pre>
+<p><img src="training-data/../img/background.jpg" alt="Competition Photo" /></p>
+<p>Now, we need to load in our artifical targets.
+Enter this into your browser to download our fake targets or click <a href="https://bintray.com/uavaustin/target-finder-assets/download_file?file_path=base-shapes-v1.tar.gz">here</a>.</p>
+<p>https://bintray.com/uavaustin/target-finder-assets/download_file?file_path=base-shapes-v1.tar.gz</p>
+<p>Let's open one of the target images.</p>
+<pre><code class="language-python">shape = Image.open(&quot;//path//to//shape.jpg&quot;)
+# Sanity Check #2
+shape.show('Example shape')
+</code></pre>
+<p><img src="training-data/../img/base-shapes-v1/pentagon/pentagon-01.png" alt="Target Image" /></p>
+<p>Since we have the background and shape images loaded, let's do some augmentation to the shape and then paste it onto the background image.
+Let's start with rotation. PIL's rotation function will return a copy of this image, rotated the given number of degrees counter clockwise around its center. The function takes three arguments: </p>
+<ul>
+<li>
+<p>angle --  the degrees to rotate clockwise about the center.</p>
+</li>
+<li>
+<p>resample --  optional flag to choose which technique to use to interpolate new pixel values expand.</p>
+</li>
+<li>
+<p>expand -- If 1, the image will expand to fit the newly rotated image.</p>
+</li>
+</ul>
+<pre><code class="language-python">img = img.rotate(45)
+img.show('Rotated Image')
+</code></pre>
+<p><img src="training-data/../img/ex_rotation.png" alt="Cropped Competition Photo" /></p>
+<p>Now we need to paste on an alphanumeric to make this a complete target.</p>
+<pre><code class="language-python"># Create an object which we can edit
+target_draw = ImageDraw.Draw(target)
+
+# Use B for example
+alpha = 'B'
+
+# Define font multiplier to shrink or grow to fit letter to target
+font_multiplier = 0.5
+
+# Path to font image file
+font_file = './fonts/Gudea/Gudea-Bold.ttf'
+
+# Create font height based on target size and scaled by font_multiplier
+font_size = int(round(font_multiplier * target.height))
+
+# Create font to put on target_draw
+font = ImageFont.truetype(font_file, font_size)
+
+# Get width and height of the font 
+w, h = target_draw.textsize(alpha, font=font)
+
+# Get top left coordinate of where to paste alpha onto target
+x = (target.width - w) / 2
+y = (target.height - h) / 2
+
+# Set the rgb color of the alpha
+alpha_rgb = ((64, 115, 64))
+
+# Finally, draw the alpha onto the target
+target_draw.text((x,y), alpha, alpha_rgb, font=font)
+
+# Rotate target 
+angle = 45
+rotated_image = target.rotate(angle, expand=1)2
+rotated_image.show(&quot;Rotated Image&quot;)
+
+</code></pre>
+<p><img src="training-data/../img/pasted.png" alt="Cropped Competition Photo" /></p>
+<p>There is a white background around the target that we want to make transparent to we can paste just the target onto the background image. The code below will remove all white and replace with transparent values.</p>
+<pre><code class="language-python">for x in range(rotated_image.width):
+    for y in range(rotated_image.height):
+
+        r, g, b, a = rotated_image.getpixel((x, y))
+
+        if r == 255 and g == 255 and b == 255:
+            rotated_image.putpixel((x, y), (0, 0, 0, 0))
+</code></pre>
+<p>PIL's getbbox funcition finds the smallest bounding box around the non zero region of the image as a 4-tuple. We can then use this 4-tuple to crop the image down to just the target. </p>
+<pre><code class="language-python">rotated_crop = rotated_image.crop(rotated_image.getbbox()) 
+</code></pre>
+<p><img src="training-data/../img/cropped.png" alt="Cropped Target" /></p>
+<p>Let's check the size of the target.</p>
+<pre><code class="language-python">rotated_image.size
+&gt;&gt; (535, 535)
+</code></pre>
+<p>We need to downscale the target to make it more realistic on the background image.</p>
+<pre><code class="language-python">rotated_image = rotated_image.resize((60,60))
+</code></pre>
+<p>Finally, time to paste the target onto the background. We will paste the target's top left pixel to (1500, 1000) on the background.</p>
+<pre><code class="language-python">paste_loc = (1500,1000)
+background.paste(rotated_image, paste_loc, rotated_image)
+background.show()
+</code></pre>
+<p><img src="training-data/../img/background_target.jpg" alt="Background With Target" /></p>
+<p>We need to save the class and location of this target for our model data generation later. We will save the target class index, the (x,y) of the center of the target, height, and width. </p>
+<pre><code class="language-python">w_target, h_target = rotated_image.size
+shape_bbox = ['pentagon', int(paste_loc[0]), int(paste_loc[1]), w_target, h_target]
+with open('./imgs/background_target.txt', 'w') as label_file:
+    label_file.write('{} {} {} {} {}\n'.format(*shape_bbox))
+</code></pre>
+<p>Here, we use <code>*</code> to unpack the tuple <code>shape_bbox</code> so we can paste the values into the file.
+The output <code>background_target.txt</code> file should have the single following line:</p>
+<p><code>pentagon 1500 1000 60 60</code></p>
+<h1><a class="header" href="#classifier-data" id="classifier-data">Classifier Data</a></h1>
+<p>So now we have our background image with an artificial target on it. We need to generate the data to train our classifier. Darknet needs the training images to be labeled as follows: <code>//path//to//image//index_classid.ext</code>. For our purposes we have two classification classes, target (index = 0) and background (index = 1).</p>
+<p>Passing a 4200x2200 image through our model would take way too long to process. Either we could downsample the image to a size more digestible for a model, like 800x800, or we can slice up the larger image into smaller tiles. We will do the latter because downsampling the entire image would make the targets way too small. </p>
+<p>Let's slice up our larger image into our two different classification categories, target and background. If the slice contains the target, then we want that image to be separated as a target-containing image and the others background.</p>
+<p>We need to define some constansts that we will use to create the training data:</p>
+<pre><code class="language-python"># Program imports
+import os
+import random
+from PIL import Image
+
+# Define crop sizes
+CROP_WIDTH = 416
+CROP_HEIGHT = 416
+
+# Size of the classification data
+CLF_WIDTH = 416
+CLF_HEIGHT = 416
+
+# Amount of overlap between image slices
+OVERLAP = 50
+
+# Set the two classification types
+CLASSES = ['background', 'shape_target']
+</code></pre>
+<p>First, let's make a function to check wether or not a target is inside the image slice or not. This function needs to take in the tile dimensions and target information from the txt we previously generatd.</p>
+<pre><code class="language-python">def contains_shape(x1, y1, x2, y2, data):
+
+    for shape_desc, bx, by, bw, bh in data:
+
+        if x1 &lt; bx &lt; bx + bw &lt; x2 and y1 &lt; by &lt; by + bh &lt; y2:
+            return True
+
+    return False
+</code></pre>
+<p>Second, we need a function to slice up the image and also call the <code> contains_shape</code> function we made.</p>
+<pre><code class="language-python">def create_clf_data(dataset_name, dataset_path, image_name, image, data):
+    &quot;&quot;&quot;Generate data for the classifier model&quot;&quot;&quot;
+    full_width, full_height = image.size
+    # Empty list to store background and shape crops
+    backgrounds = []
+    shapes = []
+    # Cycle through ccrops
+    for y1 in range(0, full_height - CROP_HEIGHT, CROP_HEIGHT - OVERLAP):
+
+        for x1 in range(0, full_width - CROP_WIDTH, CROP_WIDTH - OVERLAP):
+
+            y2 = y1 + CROP_HEIGHT
+            x2 = x1 + CROP_WIDTH
+            # Crop
+            cropped_img = image.crop((x1, y1, x2, y2))
+            # Resize for classification size
+            cropped_img = cropped_img.resize((CLF_WIDTH, CLF_HEIGHT))
+            # Check if shape inside crop
+            if contains_shape(x1, y1, x2, y2, data):
+                shapes.append(cropped_img) 
+            else:
+                backgrounds.append(cropped_img)
+                
+    # Keep classes balanced and randomize data
+    num_data = min(len(backgrounds), len(shapes))
+    random.shuffle(backgrounds)
+    random.shuffle(shapes)
+    # Path where we will write path to image crops
+    list_fn = os.path.join(dataset_path,
+                            '{}_list.txt'.format(dataset_name))
+
+    for i in range(num_data):
+	# Name for image with target
+        shape_fn = '{}_{}_{}.png'.format(CLASSES[1], image_name, i)
+	# Path for image with target
+        shape_path = os.path.join(os.getcwd(), dataset_path, shape_fn)
+	# Name for background image
+        bg_fn = '{}_{}_{}.png'.format(CLASSES[0], image_name, i)
+	# Full path for background image
+        bg_path = os.path.join(os.getcwd(), dataset_path, bg_fn)
+	# Save the images
+        shapes[i].save(shape_path)
+        backgrounds[i].save(bg_path)
+	# Write the paths to the images. Need this for model training
+        with open(list_fn, 'a') as list_file:
+            list_file.write(shape_path + &quot;\n&quot;)
+            list_file.write(bg_path + &quot;\n&quot;)
+</code></pre>
+<p>Third, let's make a function to do a couple things:</p>
+<ul>
+<li>Create folders to save our image slices</li>
+<li>Collect the target information in the image from the txt</li>
+<li>Pass all aforementioned information into our <code>create_clf_data</code> function</li>
+</ul>
+<pre><code class="language-python">def convert_data(img_path):
+    # Get paths to new images and image dir
+    new_dataset = os.path.join(os.getcwd(),'imgs')
+    new_images_path = os.path.join(os.getcwd(), new_dataset, 'clf_imgs')
+    # Make new directory
+    os.makedirs(new_images_path, exist_ok=True)
+    # Get txt for image
+    label_fn = img_path.replace('.jpg', '.txt')
+    # Initialize list to hold shape parameters
+    image_data = []
+    # Read in target information for this image
+    with open(label_fn, 'r') as label_file:
+        for line in label_file.readlines():
+            shape_desc, x, y, w, h = line.strip().split(' ')
+            x, y, w, h = int(x), int(y), int(w), int(h)
+            image_data.append((shape_desc, x, y, w, h))
+    
+    image_name = os.path.basename(img_path).replace('.jpg', '')
+    # Create the data!
+    create_clf_data(new_dataset,
+                    new_images_path,
+                    image_name,
+                    Image.open(img_path),
+                    image_data)
+</code></pre>
+<p>These three functions constitute our classification data generation script. We can tell the python interpreter to run<code>convert_data(img)</code> by the following:</p>
+<pre><code class="language-python">if __name__ == '__main__':
+    convert_data('/path/to/img')
+</code></pre>
+<p>If we run this script, the python interpreter sets the global variable <code>__name__</code> to <code>__main__</code>, therefore we can control how the file executes with the lines above. </p>
+<h1><a class="header" href="#detector-data" id="detector-data">Detector Data</a></h1>
+<p>For the YOLO object detector, training data consists of training images and corresponding txt files detailing the objects' class and normalized center x and y, width, and height. We'll start by defining the basic constants.</p>
+<pre><code class="language-python"># Project imports
+import glob
+import os
+from PIL import Image
+
+# Define crop sizes
+CROP_WIDTH = 416
+CROP_HEIGHT = 416
+
+# Define detection image size
+DET_WIDTH = 608
+DET_HEIGHT = 608
+
+# Amount of overlap between image slices
+OVERLAP = 50
+
+# This ratio will help with maintaining aspect ratio
+RATIO = DET_WIDTH / CROP_WIDTH
+
+# Define our shape classes
+CLASSES = os.environ.get(
+    'SHAPE_TYPES',
+    'circle,cross,pentagon,quarter-circle,rectangle,semicircle,square,star,'
+    'trapezoid,triangle'
+).split(',')
+</code></pre>
+<p>Our original txt file has the target information in terms of the full image size. We need to make a function that can adjust those coordinates for the image crops. This function will also check if a target is contained in the image slice.</p>
+<pre><code class="language-python">def get_converted_bboxes(x1, y1, x2, y2, data):
+    &quot;&quot;&quot;Find bboxes in coords and convert them to yolo format&quot;&quot;&quot;
+    bboxes = []
+
+    for shape_desc, bx, by, bw, bh in data:
+
+        if x1 &lt; bx &lt; bx + bw &lt; x2 and y1 &lt; by &lt; by + bh &lt; y2:
+
+            # Yolo3 Format
+            # class_idx center_x/im_w center_y/im_h w/im_w h/im_h
+            shape_class_idx = CLASSES.index(shape_desc)
+            center_x = (bx - x1 + bw / 2) * RATIO / DET_WIDTH
+            center_y = (by - y1 + bh / 2) * RATIO / DET_HEIGHT
+            width = bw * RATIO / DET_WIDTH
+            height = bh * RATIO / DET_HEIGHT
+
+            bboxes.append((shape_class_idx,
+                          center_x, center_y,
+                          width, height))
+
+    return bboxes
+</code></pre>
+<p>Next, we need to crop the original image and create the training data. This function slices the image, checks for targets, and then saves the target txts. We do not save slices without targets because and object detector must have a class in the image.</p>
+<pre><code class="language-python">def create_detector_data(dataset_name, dataset_path, image_name, image, data):
+    &quot;&quot;&quot;Generate data for the detector model&quot;&quot;&quot;
+    full_width, full_height = image.size
+
+    k = 0
+
+    for y1 in range(0, full_height - CROP_HEIGHT, CROP_HEIGHT - OVERLAP):
+
+        for x1 in range(0, full_width - CROP_WIDTH, CROP_WIDTH - OVERLAP):
+
+            y2 = y1 + CROP_HEIGHT
+            x2 = x1 + CROP_WIDTH
+
+            cropped_bboxes = get_converted_bboxes(x1, y1, x2, y2, data)
+
+            if len(cropped_bboxes) == 0:
+                # discard crop b/c no shape
+                continue
+
+            k += 1
+
+            cropped_img = image.crop((x1, y1, x2, y2))
+            cropped_img = cropped_img.resize((DET_WIDTH, DET_HEIGHT))
+
+            name = '{}_crop{}'.format(image_name, k)
+            bbox_fn = os.path.join(dataset_path, name + '.txt')
+            image_fn = os.path.join(os.getcwd(), dataset_path, name + '.png')
+            list_fn = '{}_list.txt'.format(dataset_name)
+            list_path = os.path.join(dataset_path, list_fn)
+
+            cropped_img.save(image_fn)
+
+            with open(bbox_fn, 'w') as label_file:
+                for bbox in cropped_bboxes:
+                    label_file.write('{} {} {} {} {}\n'.format(*bbox))
+
+            with open(list_path, 'a') as list_file:
+                list_file.write(image_fn + &quot;\n&quot;)
+
+</code></pre>
+<p>Lastly, a function to create the cropped data folders, read in the image data, and call the function above.</p>
+<pre><code class="language-python">def convert_data(img_path):
+
+    # Get paths to new images and image dir
+    new_dataset = os.path.join(os.getcwd(),'imgs')
+    new_images_path = os.path.join(os.getcwd(), new_dataset, 'detector_imgs')
+
+    os.makedirs(new_images_path, exist_ok=True)
+
+    label_fn = img_path.replace('.jpg', '.txt')
+
+    image_data = []
+ 
+    with open(label_fn, 'r') as label_file:
+        for line in label_file.readlines():
+            shape_desc, x, y, w, h = line.strip().split(' ')
+            x, y, w, h = int(x), int(y), int(w), int(h)
+            image_data.append((shape_desc, x, y, w, h))
+
+    image_name = os.path.basename(img_path).replace('.jpg', '')
+
+    create_detector_data(new_dataset,
+                            new_images_path,
+                            image_name,
+                            Image.open(img_path),
+                            image_data)
+</code></pre>
+<p>We can run the script by placing the following line in the script:</p>
+<pre><code class="language-python">if __name__ == &quot;__main__&quot;:
+    convert_data('/path/to/img')
+</code></pre>
+<h1><a class="header" href="#convolutional-neural-networks" id="convolutional-neural-networks">Convolutional Neural Networks</a></h1>
+<p>This section will introduce you to convolutional neural networks (CNNs). The concepts we discuss here form the backbone for the YOLO object detection algorithm.</p>
+<h1><a class="header" href="#intro-to-neural-nets" id="intro-to-neural-nets">Intro to Neural Nets</a></h1>
+<p>A neural network is a computing system <em>loosely</em> modeled after biological neural networks.</p>
+<p>We will construct a very simple neural network in python with the following components:</p>
+<ul>
+<li>An input layer <strong>x</strong></li>
+<li>A fully connected hidden layer. Fully connected means every neuron in the current layer recieves every neuron of the previous layer as input.</li>
+<li>An output layer <strong>y</strong></li>
+<li>Weights <strong>W</strong> and biases <strong>b</strong></li>
+<li>An activation function for each hidden layer</li>
+</ul>
+<p><img src="convolution-neural-networks/../img/ex_net.png" alt="CNN vs NN" /></p>
+<p>The activation is a function that is applied to the scalar of the output of each convolution. Activation functions are used to help the model's gradient descent converge quicker. Here is a graph of the leaky ReLU activation function. The activation function we will use here is called a sigmoid function. This works by squashing numbers between [0,1].</p>
+<p><img src="convolution-neural-networks/../img/sigmoid.png" alt="CNN vs NN" /></p>
+<pre><code class="language-python">def sigmoid(x):
+    return 1.0/(1+ np.exp(-x))
+</code></pre>
+<p>Next, we need the derivative of this function in order to make the model actually learn. This is called <em>backpropagation</em>. Check <a href="http://cs231n.github.io/optimization-2/">this</a> link to learn about backpropagation which is a calculus based operation. </p>
+<pre><code class="language-python">def sigmoid_derivative(x):
+    return x * (1.0 - x)
+</code></pre>
+<p>Now, let's define our neural network class.</p>
+<pre><code class="language-python">class NeuralNetwork:
+    def __init__(self, x, y):
+        self.input      = x
+        self.weights1   = np.random.rand(self.input.shape[1],4) 
+        self.weights2   = np.random.rand(4,1)                 
+        self.y          = y
+        self.output     = np.zeros(y.shape)
+</code></pre>
+<p>We will construct the NeuralNetwork object with two pieces of data, or dataset <code>x</code>, and the associated output <code>y</code>. The <code>weights1</code> is a 2 dimensional array where the number of rows corresponds to the number of columns of our input data and the columns is 4 because there are 4 neurons on our hidden layer. The <code>weights2</code> the second set of weights that is applied to the four outputs from the hidden layer by the final neuron. </p>
+<p>Now we need a method to pass the input through the model. This is often called &quot;feed-forward.&quot;</p>
+<pre><code class="language-python">    def feedforward(self):
+        self.layer1 = sigmoid(np.dot(self.input, self.weights1))
+        self.output = sigmoid(np.dot(self.layer1, self.weights2))
+</code></pre>
+<p>So we can pass the input through the model and get an output, but how do we make the model <em>learn</em>? The answer is through bacckpropagation.</p>
+<pre><code class="language-python">def backprop(self):
+    # application of the chain rule to find derivative of the loss function with respect to weights2 and weights1
+    d_weights2 = np.dot(self.layer1.T, (2*(self.y - self.output) * sigmoid_derivative(self.output)))
+    d_weights1 = np.dot(self.input.T,  (np.dot(2*(self.y - self.output) * sigmoid_derivative(self.output), self.weights2.T) * sigmoid_derivative(self.layer1)))
+
+    # update the weights with the derivative (slope) of the loss function
+    self.weights1 += d_weights1
+    self.weights2 += d_weights2
+</code></pre>
+<p>We can wrap all this together and run the script with the following:</p>
+<pre><code class="language-python">if __name__ == &quot;__main__&quot;:
+    X = np.array([[0,0,1],
+                  [0,1,1],
+                  [1,0,1],
+                  [1,1,1]])
+    y = np.array([[0],[1],[1],[0]])
+    nn = NeuralNetwork(X,y)
+
+    for i in range(5000):
+        nn.feedforward()
+        nn.backprop()
+
+    print(nn.output)
+</code></pre>
+<p>When you run this function for the 5000 iterations specified by <code>range(5000):</code>, you should get the following output: </p>
+<pre><code class="language-python">[[0.01050021]
+ [0.98786207]
+ [0.99237218]
+ [0.01088507]]
+</code></pre>
+<p>This is pretty close to our ground-truth output which was </p>
+<pre><code class="language-python">[[0]
+ [1]
+ [1]
+ [0]])
+</code></pre>
+<h1><a class="header" href="#convolutional-neural-networks-1" id="convolutional-neural-networks-1">Convolutional Neural Networks</a></h1>
+<p>A Convolutional Neural Network (CNN) is a type of neural network primarily used for image recognition and classification.
+We will explore the basic building blocks of a CNN built using the platform Darknet. </p>
+<p>Here is an example of a fundemental layer in a darknet classification model.</p>
+<pre><code class="language-ini">[convolutional]
+batch_normalize=1
+filters=16
+size=3
+stride=1
+pad=1
+activation=leaky
+
+[maxpool]
+size=2
+stride=2
+</code></pre>
+<p>Seems pretty simple, right? Let's dive deeper.</p>
+<p>First, <code>[convolutional]</code> and <code>[maxpool]</code> are just names used to tell Darknet what layers we are going to construct.</p>
+<h3><a class="header" href="#filters" id="filters">Filters</a></h3>
+<p>A filter is the fundemental block of our convolutional layer; it does all the heavy lifting.</p>
+<p><img src="convolution-neural-networks/../img/filter.png" alt="CNN" /></p>
+<p>Here <code>filters = 16</code> means we will be convolving with 16 different filters. Each filter will have a 3x3 kernel size, convolutional stride of 1, and padding of 1 around the image. Here is a picture of a filter acting on an input layer. The stride determine how far over the filter shifts after convolution. Pad means adding rows of 0's to the top and bottom and columns of 0's to the left and right of the input layers. This helps to preserve image size to our layers don't get too small undesirably quickly. </p>
+<p>The <code>activation</code> is a function that is applied to the scalar of the output of each convolution. Activation functions are used to help the model's gradient descent converge quicker. Here is a graph of the leaky ReLU activation function.</p>
+<p><img src="convolution-neural-networks/../img/lrelu.jpg" alt="CNN" /></p>
+<h3><a class="header" href="#batch-normalization" id="batch-normalization">Batch Normalization</a></h3>
+<p>Batch normalization is a step which normalizes the output of convolutional layers in order to help the model train. When the activations of layers are not normalized, between different layers, The activations can vary significantly between different layers if they are not normalized, taking longer to train the model.  For more information, <a href="https://arxiv.org/pdf/1502.03167.pdf">here</a> is a link to the original batch normalization paper.</p>
+<h3><a class="header" href="#max-pooling" id="max-pooling">Max Pooling</a></h3>
+<p>Max pooling is a type of layer with no learnable parameters. This operations is used to down-sample features extracted which can help the model generalize feature associations which prevents overfitting. Also, this method decreases the amount of parameters, making the training and inferencing process quicker.</p>
+<p><img src="convolution-neural-networks/../img/maxpool.jpeg" alt="Max Pooling Image" /></p>
+<h1><a class="header" href="#yolo-object-detector" id="yolo-object-detector">YOLO Object Detector</a></h1>
+<p>We will now briefly introduce the YOLO Object Detection algorithm and hope to show how it draws from previously described CNN buildin blocks.</p>
+<h1><a class="header" href="#yolo-object-detector-1" id="yolo-object-detector-1">YOLO Object Detector</a></h1>
+<p>Image classification mearly returns a class per image, but what if we want to localize where a certain target is within an image? This is where object detection comes in. </p>
+<p>There are a handful of object detection model types such as: Fast-RCNN's, Faster-RCNN's, and SSD; however, we implement the YOLO algorithm because of its much quicker than most other options while maintaining a high accuracy. </p>
+<p><img src="yolo-architecture/../img/yolov3.png" alt="YOLO Model" /></p>
+<p>YOLO's speed advantage comes from passing the entire start image through feature extraction engine that is simply comprised of the exact layers we just introduced in the Convolutional Neural Networks section! After this feature extractor, then comes the yolo layers which we will going in depth with.</p>
+<p>The following is a complete YOLOv3 model with two yolo layers:</p>
+<pre><code class="language-ini">[net]
+# Testing
+batch=1
+subdivisions=1
+# Training
+# batch=64
+# subdivisions=2
+width=416
+height=416
+channels=3
+momentum=0.9
+decay=0.0005
+angle=0
+saturation = 1.5
+exposure = 1.5
+hue=.1
+
+learning_rate=0.001
+burn_in=1000
+max_batches = 500200
+policy=steps
+steps=400000,450000
+scales=.1,.1
+
+[convolutional]
+batch_normalize=1
+filters=16
+size=3
+stride=1
+pad=1
+activation=leaky
+
+[maxpool]
+size=2
+stride=2
+
+    ...
+
+[convolutional]
+size=1
+stride=1
+pad=1
+filters=255
+activation=linear
+
+
+
+[yolo]
+mask = 3,4,5
+anchors = 10,14,  23,27,  37,58,  81,82,  135,169,  344,319
+classes=80
+num=6
+jitter=.3
+ignore_thresh = .7
+truth_thresh = 1
+random=1
+
+[route]
+layers = -4
+
+[convolutional]
+batch_normalize=1
+filters=128
+size=1
+stride=1
+pad=1
+activation=leaky
+
+[upsample]
+stride=2
+
+[route]
+layers = -1, 8
+
+[convolutional]
+batch_normalize=1
+filters=256
+size=3
+stride=1
+pad=1
+activation=leaky
+
+[convolutional]
+size=1
+stride=1
+pad=1
+filters=255
+activation=linear
+
+[yolo]
+mask = 0,1,2
+anchors = 10,14,  23,27,  37,58,  81,82,  135,169,  344,319
+classes=80
+num=6
+jitter=.3
+ignore_thresh = .7
+truth_thresh = 1
+random=1
+</code></pre>
+<p>First, let's go over the sections before the first <code>[convolutional]</code> layer.</p>
+<ul>
+<li><code>batch</code>: number of images to send in to the gpu. GPU with larger memmory means it can train on more images at a time.</li>
+<li><code>subdivisions</code>: number chunks to split the batch size up in to</li>
+<li><code>width</code>: input size of image. Image will be resized to this dimension upon input if not already this size.</li>
+<li><code>height</code>: input size of image. Image will be resized to this dimension upon input if not already this size.</li>
+<li><code>channels</code>: number of input layers. It's 3 here because our input image is RGB.</li>
+<li><code>momentum, decay</code>: These two parameters apply to the gradient descent algorithm.</li>
+</ul>
+<p>Angle, saturation, exposure, and hue are all data augmentation parameters that are randomly applied to data during training to increase the robustness of the model.</p>
+<p>The next group of paramters all deal with the gradient descent algorithm and are out of the scope of this training documentation. </p>
+<p>Next, you can see the <code>[convolutional]</code> blocks are the exact same as what we covered in the Convolutional Neural Networks section! After many convolutional layers, we reach the <code>[yolo]</code> layers. </p>
+<p>The <code>mask</code> paramter (poorly named) tells the model which anchor boxes to use to predict targets. For exammple, we have 6 anchors, and in the first <code>[yolo]</code> layer, <code>mask = 3,4,5</code> because we want the model to use the last three of our boxes to make predictions. We want the first layer to predict the largest boxes because the input is at its coarsest scale right now i.e. the original input has been downsampled. </p>
+<p><img src="yolo-architecture/../img/yolov3_2.png" alt="YOLO Model" /></p>
+<p>When we real the yolo layer, the image is divided into a grid of squares and in each square there are a <code>num</code> of rectanglular <code>anchors</code> boxes. The models job is to predict which box or boxes associate with a target in that square. This prediction happens three times. The first time, the input layer is 1/32 the size of the original image, the second yolo layer acts on a input layer 1/6 the original, and lastly a prediction on layer 1/8 the original image. </p>
+<p>You might notice the image is increasing by a factor of 2, which comes from the stride of the <code>[unsample]</code> layers. The unsampling method is used to increase the size of the previous layer. This helps small object prediction which is of great interest to us. </p>
+<p>The <code>[route]</code> layers are used to bring back previous layers to help guide the unsampling process. This can also be referred to <em>residual</em>. For example, <code>layers =  -1,8</code> means to combine the output of the previous layer and eighth layer of the model.</p>
+<p><code>jitter</code> is another data augmentation that randomly changes the aspect ratio and size of images to make the model more robust. </p>
+<p>We can ignore <code>ignore_thresh</code> and <code>truth_thresh</code> as they are not used and are mearly artifacts of experimentation from the source code. </p>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                        
+
+                        
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                
+
+                
+            </nav>
+
+        </div>
+
+        
+
+        
+        <!-- Google Analytics Tag -->
+        <script type="text/javascript">
+            var localAddrs = ["localhost", "127.0.0.1", ""];
+
+            // make sure we don't activate google analytics if the developer is
+            // inspecting the book locally...
+            if (localAddrs.indexOf(document.location.hostname) === -1) {
+                (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+                (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+                m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+                })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+                ga('create', 'UA-105339892-2', 'auto');
+                ga('send', 'pageview');
+            }
+        </script>
+        
+
+        
+        
+        
+        <script type="text/javascript">
+            window.playpen_copyable = true;
+        </script>
+        
+
+        
+
+        
+        <script src="elasticlunr.min.js" type="text/javascript" charset="utf-8"></script>
+        <script src="mark.min.js" type="text/javascript" charset="utf-8"></script>
+        <script src="searcher.js" type="text/javascript" charset="utf-8"></script>
+        
+
+        <script src="clipboard.min.js" type="text/javascript" charset="utf-8"></script>
+        <script src="highlight.js" type="text/javascript" charset="utf-8"></script>
+        <script src="book.js" type="text/javascript" charset="utf-8"></script>
+
+        <!-- Custom JS scripts -->
+        
+
+        
+        
+        <script type="text/javascript">
+        window.addEventListener('load', function() {
+            MathJax.Hub.Register.StartupHook('End', function() {
+                window.setTimeout(window.print, 100);
+            });
+        });
+        </script>
+        
+        
+
+    </body>
+</html>
